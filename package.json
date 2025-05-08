@@ -2,7 +2,7 @@
   "name": "prompt",
   "displayName": "提示词管理",
   "description": "一个简洁的VSCode提示词管理插件",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.74.0"
   },

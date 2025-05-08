@@ -104,15 +104,6 @@ class PromptViewProvider {
 	resolveWebviewView(webviewView, context, token) {
 		this._view = webviewView;
 
-		// 监听视图可见性变化
-		webviewView.onDidChangeVisibility(() => {
-			if (webviewView.visible) {
-				// 当视图变为可见时刷新提示词列表
-				this.promptManager.loadPrompts(); // 重新加载提示词数据
-				this._updatePromptList();
-			}
-		});
-
 		webviewView.webview.options = {
 			enableScripts: true,
 			localResourceRoots: [this.extensionUri]
@@ -153,30 +144,15 @@ class PromptViewProvider {
 				case 'showError':
 					vscode.window.showErrorMessage(message.message);
 					break;
-				case 'refresh':
-					// 处理刷新请求
-					this._updatePromptList();
-					break;
 			}
 		});
 
-		// 监听视图可见性变化
-		webviewView.onDidChangeVisibility(() => {
-			if (webviewView.visible) {
-				// 当视图变为可见时刷新提示词列表
-				this.promptManager.loadPrompts(); // 重新加载提示词数据
-				this._updatePromptList();
-			}
-		});
-
-		// 初始加载提示词列表（添加延迟确保WebView已准备好）
-		setTimeout(() => {
-			this._updatePromptList();
-		}, 300);
+		// 初始加载提示词列表
+		this._updatePromptList();
 	}
 
 	_updatePromptList() {
-		if (this._view && this._view.webview) {
+		if (this._view) {
 			const prompts = this.promptManager.getAllPrompts();
 			this._view.webview.postMessage({
 				command: 'updatePromptList',
@@ -209,6 +185,7 @@ class PromptViewProvider {
 					<button id="save-button">保存</button>
 				</div>
 				<div class="divider"></div>
+				<div class="list-header">我的提示词</div>
 				<div class="prompt-list" id="prompt-list">
 					<!-- 提示词列表将由JS动态生成 -->
 				</div>

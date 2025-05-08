@@ -19,6 +19,7 @@ Welcome to contribute code, report issues or make feature suggestions.
 
 ---------------------------------------------------
 
+> 本代码针对1.96版本的vscode，如果版本不同，请修改依赖中的@types/vscode版本和engines字段的vs版本限制
 
 # 提示词管理
 
