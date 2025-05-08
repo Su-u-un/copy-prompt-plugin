@@ -1,0 +1,127 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: var(--vscode-font-family);
+    color: var(--vscode-foreground);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px;
+}
+
+.input-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+#title-input {
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+}
+
+#content-input {
+    height: 100px;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    resize: vertical;
+    font-family: var(--vscode-font-family);
+}
+
+#save-button {
+    align-self: flex-end;
+    padding: 6px 12px;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+#save-button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--vscode-panel-border);
+    margin: 10px 0;
+}
+
+.list-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.prompt-list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.empty-message {
+    color: var(--vscode-descriptionForeground);
+    font-style: italic;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.prompt-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 3px;
+    background-color: var(--vscode-editor-background);
+}
+
+.prompt-content {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.prompt-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.prompt-preview {
+    color: var(--vscode-descriptionForeground);
+    white-space: pre-wrap;
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+    line-height: 1.4;
+    max-height: 4.2em; /* 约3行高度 */
+    overflow: hidden;
+}
+
+.prompt-actions {
+    display: flex;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 3px;
+}
+
+.action-button:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+} 

@@ -1,0 +1,90 @@
+{
+  "name": "prompt",
+  "displayName": "提示词管理",
+  "description": "一个简洁的VSCode提示词管理插件",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": ["onView:promptView"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "prompt.addPrompt",
+        "title": "添加提示词",
+        "icon": "$(add)"
+      },
+      {
+        "command": "prompt.deletePrompt",
+        "title": "删除提示词",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "prompt.copyPrompt",
+        "title": "复制提示词",
+        "icon": "$(copy)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "prompt-explorer",
+          "title": "提示词管理",
+          "icon": "./icons/prompt-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "prompt-explorer": [
+        {
+          "id": "promptView",
+          "name": "我的提示词",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "prompt.addPrompt",
+          "when": "view == promptList",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "prompt.copyPrompt",
+          "when": "view == promptList",
+          "group": "inline"
+        },
+        {
+          "command": "prompt.deletePrompt",
+          "when": "view == promptList",
+          "group": "inline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.99.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "eslint": "^9.25.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2"
+  },
+  "publisher": "johnny",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/你的用户名/你的仓库名"
+  }
+}
