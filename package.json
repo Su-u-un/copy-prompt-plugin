@@ -4,12 +4,14 @@
   "description": "一个简洁的VSCode提示词管理插件",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onView:promptView"],
+  "activationEvents": [
+    "onView:promptView"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
@@ -75,16 +77,18 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.99.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
-    "eslint": "^9.25.1",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1"
   },
   "publisher": "johnny",
   "repository": {
     "type": "git",
-    "url": "https://github.com/你的用户名/你的仓库名"
+    "url": "https://github.com/Su-u-un/copy-prompt-plugin"
+  },
+  "dependencies": {
+    "@types/vscode": "^1.74.0"
   }
 }
