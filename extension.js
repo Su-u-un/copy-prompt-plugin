@@ -10,27 +10,46 @@ function activate(context) {
 	// 创建提示词存储管理器
 	const promptManager = new PromptManager(context);
 	
-	// 注册Webview视图提供者
-	const promptViewProvider = new PromptViewProvider(context.extensionUri, promptManager);
+	// 注册编辑视图提供者
+	const promptEditViewProvider = new PromptEditViewProvider(context.extensionUri, promptManager);
+	
+	// 注册列表视图提供者
+	const promptListViewProvider = new PromptListViewProvider(context.extensionUri, promptManager);
 	
 	// 注册Webview视图
-	const promptView = vscode.window.registerWebviewViewProvider(
-		'promptView',
-		promptViewProvider
+	const promptEditView = vscode.window.registerWebviewViewProvider(
+		'promptEditView',
+		promptEditViewProvider
+	);
+	
+	const promptListView = vscode.window.registerWebviewViewProvider(
+		'promptListView',
+		promptListViewProvider
 	);
 	
 	// 导出提示词命令
 	const exportPromptCmd = vscode.commands.registerCommand('prompt.exportPrompts', async () => {
 		await promptManager.exportPrompts();
+		// 成功导出后更新列表
+		promptListViewProvider.updatePromptList();
 	});
 	
 	// 导入提示词命令
 	const importPromptCmd = vscode.commands.registerCommand('prompt.importPrompts', async () => {
-		await promptManager.importPrompts();
+		const success = await promptManager.importPrompts();
+		if (success) {
+			// 成功导入后更新列表
+			promptListViewProvider.updatePromptList();
+		}
 	});
 	
 	// 注册到上下文
-	context.subscriptions.push(promptView, exportPromptCmd, importPromptCmd);
+	context.subscriptions.push(
+		promptEditView, 
+		promptListView, 
+		exportPromptCmd, 
+		importPromptCmd
+	);
 	
 	console.log('提示词管理插件已激活');
 }
@@ -121,7 +140,7 @@ class PromptManager {
 			
 			// 用户取消操作
 			if (!fileUris || fileUris.length === 0) {
-				return;
+				return false;
 			}
 			
 			// 读取文件内容
@@ -192,8 +211,8 @@ class PromptManager {
 	}
 }
 
-// WebView视图提供者
-class PromptViewProvider {
+// 提示词编辑视图提供者
+class PromptEditViewProvider {
 	constructor(extensionUri, promptManager) {
 		this.extensionUri = extensionUri;
 		this.promptManager = promptManager;
@@ -202,15 +221,6 @@ class PromptViewProvider {
 
 	resolveWebviewView(webviewView, context, token) {
 		this._view = webviewView;
-
-		// 监听视图可见性变化
-		webviewView.onDidChangeVisibility(() => {
-			if (webviewView.visible) {
-				// 当视图变为可见时刷新提示词列表
-				this.promptManager.loadPrompts(); // 重新加载提示词数据
-				this._updatePromptList();
-			}
-		});
 
 		webviewView.webview.options = {
 			enableScripts: true,
@@ -225,10 +235,81 @@ class PromptViewProvider {
 				case 'addPrompt':
 					const success = this.promptManager.addPrompt(message.title, message.content);
 					if (success) {
-						this._updatePromptList();
+						// 清空表单
+						this._view.webview.postMessage({
+							command: 'clearForm'
+						});
+						
+						// 通知列表视图更新
+						vscode.commands.executeCommand('prompt.refreshList');
 						vscode.window.showInformationMessage(`提示词 "${message.title}" 已添加`);
 					}
 					break;
+				case 'showError':
+					vscode.window.showErrorMessage(message.message);
+					break;
+			}
+		});
+	}
+
+	_getWebviewContent(webview) {
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.extensionUri, 'media', 'edit.js')
+		);
+		const styleUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.extensionUri, 'media', 'style.css')
+		);
+
+		return `<!DOCTYPE html>
+		<html lang="zh-CN">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<link href="${styleUri}" rel="stylesheet">
+			<title>编辑提示词</title>
+		</head>
+		<body>
+			<div class="edit-container">
+				<div class="input-section">
+					<input type="text" id="title-input" placeholder="提示词标题">
+					<textarea id="content-input" placeholder="输入提示词内容..."></textarea>
+					<div class="button-row">
+						<button id="save-button">保存</button>
+					</div>
+				</div>
+			</div>
+			<script src="${scriptUri}"></script>
+		</body>
+		</html>`;
+	}
+}
+
+// 提示词列表视图提供者
+class PromptListViewProvider {
+	constructor(extensionUri, promptManager) {
+		this.extensionUri = extensionUri;
+		this.promptManager = promptManager;
+		this._view = null;
+
+		// 注册刷新列表命令
+		this._refreshCommand = vscode.commands.registerCommand('prompt.refreshList', () => {
+			this.updatePromptList();
+		});
+	}
+
+	resolveWebviewView(webviewView, context, token) {
+		this._view = webviewView;
+
+		webviewView.webview.options = {
+			enableScripts: true,
+			localResourceRoots: [this.extensionUri]
+		};
+
+		webviewView.webview.html = this._getWebviewContent(webviewView.webview);
+
+		// 处理来自WebView的消息
+		webviewView.webview.onDidReceiveMessage(message => {
+			switch (message.command) {
 				case 'deletePrompt':
 					const confirm = vscode.window.showWarningMessage(
 						`确定要删除提示词吗？`,
@@ -237,7 +318,7 @@ class PromptViewProvider {
 					).then(selection => {
 						if (selection === '确定') {
 							this.promptManager.deletePrompt(message.id);
-							this._updatePromptList();
+							this.updatePromptList();
 							vscode.window.showInformationMessage('提示词已删除');
 						}
 					});
@@ -255,7 +336,7 @@ class PromptViewProvider {
 							// 重新加载提示词
 							this.promptManager.loadPrompts();
 							// 更新视图
-							this._updatePromptList();
+							this.updatePromptList();
 							vscode.window.showInformationMessage(`提示词导入成功，视图已更新`);
 						}
 					});
@@ -268,7 +349,7 @@ class PromptViewProvider {
 					break;
 				case 'refresh':
 					// 处理刷新请求
-					this._updatePromptList();
+					this.updatePromptList();
 					break;
 			}
 		});
@@ -278,17 +359,17 @@ class PromptViewProvider {
 			if (webviewView.visible) {
 				// 当视图变为可见时刷新提示词列表
 				this.promptManager.loadPrompts(); // 重新加载提示词数据
-				this._updatePromptList();
+				this.updatePromptList();
 			}
 		});
 
 		// 初始加载提示词列表（添加延迟确保WebView已准备好）
 		setTimeout(() => {
-			this._updatePromptList();
+			this.updatePromptList();
 		}, 300);
 	}
 
-	_updatePromptList() {
+	updatePromptList() {
 		if (this._view && this._view.webview) {
 			const prompts = this.promptManager.getAllPrompts();
 			this._view.webview.postMessage({
@@ -300,7 +381,7 @@ class PromptViewProvider {
 
 	_getWebviewContent(webview) {
 		const scriptUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.extensionUri, 'media', 'main.js')
+			vscode.Uri.joinPath(this.extensionUri, 'media', 'list.js')
 		);
 		const styleUri = webview.asWebviewUri(
 			vscode.Uri.joinPath(this.extensionUri, 'media', 'style.css')
@@ -312,18 +393,10 @@ class PromptViewProvider {
 			<meta charset="UTF-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<link href="${styleUri}" rel="stylesheet">
-			<title>提示词管理</title>
+			<title>我的提示词</title>
 		</head>
 		<body>
-			<div class="container">
-				<div class="input-section">
-					<input type="text" id="title-input" placeholder="提示词标题">
-					<textarea id="content-input" placeholder="输入提示词内容"></textarea>
-					<div class="button-row">
-						<button id="save-button">保存</button>
-					</div>
-				</div>
-				<div class="divider"></div>
+			<div class="list-container">
 				<div class="prompt-list" id="prompt-list">
 					<!-- 提示词列表将由JS动态生成 -->
 				</div>

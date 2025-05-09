@@ -2,7 +2,7 @@
   "name": "prompt",
   "displayName": "提示词管理",
   "description": "一个简洁的VSCode提示词管理插件",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -10,35 +10,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:promptView"
+    "onView:promptEditView",
+    "onView:promptListView"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "prompt.addPrompt",
-        "title": "添加提示词",
-        "icon": "$(add)"
-      },
-      {
-        "command": "prompt.deletePrompt",
-        "title": "删除提示词",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "prompt.copyPrompt",
-        "title": "复制提示词",
-        "icon": "$(copy)"
-      },
-      {
         "command": "prompt.exportPrompts",
         "title": "导出提示词",
-        "icon": "$(export)"
+        "icon": "./icons/export.svg"
       },
       {
         "command": "prompt.importPrompts",
         "title": "导入提示词",
-        "icon": "$(import)"
+        "icon": "./icons/import.svg"
       }
     ],
     "viewsContainers": {
@@ -53,7 +39,12 @@
     "views": {
       "prompt-explorer": [
         {
-          "id": "promptView",
+          "id": "promptEditView",
+          "name": "新建提示词",
+          "type": "webview"
+        },
+        {
+          "id": "promptListView",
           "name": "我的提示词",
           "type": "webview"
         }
@@ -62,30 +53,25 @@
     "menus": {
       "view/title": [
         {
-          "command": "prompt.addPrompt",
-          "when": "view == promptList",
-          "group": "navigation"
-        },
-        {
           "command": "prompt.exportPrompts",
-          "when": "view == promptView",
+          "when": "view == promptListView",
           "group": "navigation"
         },
         {
           "command": "prompt.importPrompts",
-          "when": "view == promptView",
+          "when": "view == promptListView",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "prompt.copyPrompt",
-          "when": "view == promptList",
+          "when": "view == promptListView",
           "group": "inline"
         },
         {
           "command": "prompt.deletePrompt",
-          "when": "view == promptList",
+          "when": "view == promptListView",
           "group": "inline"
         }
       ]

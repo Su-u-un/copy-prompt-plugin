@@ -5,13 +5,14 @@ body {
     color: var(--vscode-foreground);
 }
 
-.container {
+/* 通用容器 */
+.container, .edit-container, .list-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     padding: 10px;
 }
 
+/* 编辑区域样式 */
 .input-section {
     display: flex;
     flex-direction: column;
@@ -59,44 +60,10 @@ body {
     margin-bottom: 10px;
 }
 
-#import-button, #export-button {
-    padding: 6px 12px;
-    background-color: var(--vscode-button-secondaryBackground);
-    color: var(--vscode-button-secondaryForeground);
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-}
-
-#import-button:hover, #export-button:hover {
-    background-color: var(--vscode-button-secondaryHoverBackground);
-}
-
 .divider {
     height: 1px;
     background-color: var(--vscode-panel-border);
     margin: 10px 0;
-}
-
-.list-header {
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#refresh-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-    border-radius: 3px;
-}
-
-#refresh-button:hover {
-    background-color: var(--vscode-button-secondaryHoverBackground);
 }
 
 .prompt-list {
