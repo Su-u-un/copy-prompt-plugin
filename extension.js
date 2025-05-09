@@ -252,7 +252,11 @@ class PromptViewProvider {
 				case 'importPrompts':
 					this.promptManager.importPrompts().then(success => {
 						if (success) {
+							// 重新加载提示词
+							this.promptManager.loadPrompts();
+							// 更新视图
 							this._updatePromptList();
+							vscode.window.showInformationMessage(`提示词导入成功，视图已更新`);
 						}
 					});
 					break;
@@ -317,8 +321,6 @@ class PromptViewProvider {
 					<textarea id="content-input" placeholder="输入提示词内容"></textarea>
 					<div class="button-row">
 						<button id="save-button">保存</button>
-						<button id="import-button">导入</button>
-						<button id="export-button">导出</button>
 					</div>
 				</div>
 				<div class="divider"></div>
