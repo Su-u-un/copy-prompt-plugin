@@ -2,7 +2,7 @@
   "name": "prompt",
   "displayName": "提示词管理",
   "description": "一个简洁的VSCode提示词管理插件",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -29,6 +29,16 @@
         "command": "prompt.copyPrompt",
         "title": "复制提示词",
         "icon": "$(copy)"
+      },
+      {
+        "command": "prompt.exportPrompts",
+        "title": "导出提示词",
+        "icon": "$(export)"
+      },
+      {
+        "command": "prompt.importPrompts",
+        "title": "导入提示词",
+        "icon": "$(import)"
       }
     ],
     "viewsContainers": {
@@ -54,6 +64,16 @@
         {
           "command": "prompt.addPrompt",
           "when": "view == promptList",
+          "group": "navigation"
+        },
+        {
+          "command": "prompt.exportPrompts",
+          "when": "view == promptView",
+          "group": "navigation"
+        },
+        {
+          "command": "prompt.importPrompts",
+          "when": "view == promptView",
           "group": "navigation"
         }
       ],

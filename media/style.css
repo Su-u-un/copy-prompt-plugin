@@ -40,7 +40,6 @@ body {
 }
 
 #save-button {
-    align-self: flex-end;
     padding: 6px 12px;
     background-color: var(--vscode-button-background);
     color: var(--vscode-button-foreground);
@@ -51,6 +50,26 @@ body {
 
 #save-button:hover {
     background-color: var(--vscode-button-hoverBackground);
+}
+
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#import-button, #export-button {
+    padding: 6px 12px;
+    background-color: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+#import-button:hover, #export-button:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
 }
 
 .divider {

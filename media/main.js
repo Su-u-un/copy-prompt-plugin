@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.getElementById('title-input');
     const contentInput = document.getElementById('content-input');
     const saveButton = document.getElementById('save-button');
+    const importButton = document.getElementById('import-button');
+    const exportButton = document.getElementById('export-button');
     const promptList = document.getElementById('prompt-list');
     
     // 保存按钮点击事件
@@ -31,6 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: '标题和内容不能为空'
             });
         }
+    });
+    
+    // 导入按钮点击事件
+    importButton.addEventListener('click', () => {
+        vscode.postMessage({
+            command: 'importPrompts'
+        });
+    });
+    
+    // 导出按钮点击事件
+    exportButton.addEventListener('click', () => {
+        vscode.postMessage({
+            command: 'exportPrompts'
+        });
     });
     
     // 处理从扩展收到的消息
